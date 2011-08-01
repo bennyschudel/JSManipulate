@@ -2,11 +2,15 @@ JSManipulate
 ============
 JSManipulate is an image filter and effects library written in Javascript for
 client-side manipulation of images on a web page.
+
 Version: v1.0 (2011-08-01)
+
 Developed by Joel Besada (http://www.joelb.me)
+
 Demo page: http://www.joelb.me/jsmanipulate
 
 MIT LICENSED (http://www.opensource.org/licenses/mit-license.php)
+
 Copyright (c) 2011, Joel Besada
 
 Usage
@@ -33,7 +37,7 @@ Here is an example of a common usage scenario:
 	JSManipulate.lensdistortion.filter(data, {refraction: 3.0, radius: 75}); 
 
 	//Now finally put the data back into the context, which will render
-        //the manipulated image on the page.
+	//the manipulated image on the page.
 	context.putImageData(data,0,0);
 
 If you are using any of the separate filters instead, note that you won't have a JSManipulate
