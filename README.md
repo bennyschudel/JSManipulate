@@ -46,6 +46,7 @@ object, so to use the filter you will have to create an instance of that specifi
 	//Instead of JSManipulate.lensdistortion.filter(...);
 	new LensDistortionFilter().filter(data, {refraction: 3.0, radius: 75}); 
 
+You can check out all of the filters and their parameters in index.html in the filter list folder
 
 
  
