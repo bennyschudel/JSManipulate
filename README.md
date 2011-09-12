@@ -50,6 +50,8 @@ You can check out all of the filters and their parameters in index.html in the f
 
 Samples
 ---------
+### Photo Editing
+http://onlinephotomashup.com/
 
 Are you using JSManipulate in a creative way in any of your web projects? Feel free to contact me on my
 Github profile and I'll make sure to include a link to your project here for everyone to see.
