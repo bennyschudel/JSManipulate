@@ -18,42 +18,42 @@ Copyright (c) 2011, Joel Besada
  */
 function FilterUtils(){
 	this.HSVtoRGB = function (h, s, v){
-	    var r, g, b;
-	    var i = Math.floor(h * 6);
-	    var f = h * 6 - i;
-	    var p = v * (1 - s);
-	    var q = v * (1 - f * s);
-	    var t = v * (1 - (1 - f) * s);
-	    switch(i % 6){
-	        case 0: r = v; g = t; b = p; break;
-	        case 1: r = q; g = v; b = p; break;
-	        case 2: r = p; g = v; b = t; break;
-	        case 3: r = p; g = q; b = v; break;
-	        case 4: r = t; g = p; b = v; break;
-	        case 5: r = v; g = p; b = q; break;
-	        default: break;
-	    }
-	    return [r * 255, g * 255, b * 255];
+		var r, g, b;
+		var i = Math.floor(h * 6);
+		var f = h * 6 - i;
+		var p = v * (1 - s);
+		var q = v * (1 - f * s);
+		var t = v * (1 - (1 - f) * s);
+		switch(i % 6){
+			case 0: r = v; g = t; b = p; break;
+			case 1: r = q; g = v; b = p; break;
+			case 2: r = p; g = v; b = t; break;
+			case 3: r = p; g = q; b = v; break;
+			case 4: r = t; g = p; b = v; break;
+			case 5: r = v; g = p; b = q; break;
+			default: break;
+		}
+		return [r * 255, g * 255, b * 255];
 	};
 	this.RGBtoHSV = function (r, g, b){
-	    r = r/255; g = g/255; b = b/255;
-	    var max = Math.max(r, g, b);
-	    var min = Math.min(r, g, b);
-	    var h, s, v = max;
-	    var d = max - min;
-	    s = max === 0 ? 0 : d / max;
-	    if(max === min){
-	        h = 0;
-	    }else{
-	        switch(max){
-	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-	            case g: h = (b - r) / d + 2; break;
-	            case b: h = (r - g) / d + 4; break;
-	            default: break;
-	        }
-	        h /= 6;
-	    }
-	    return [h, s, v];
+		r = r/255; g = g/255; b = b/255;
+		var max = Math.max(r, g, b);
+		var min = Math.min(r, g, b);
+		var h, s, v = max;
+		var d = max - min;
+		s = max === 0 ? 0 : d / max;
+		if(max === min){
+			h = 0;
+		}else{
+			switch(max){
+				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+				case g: h = (b - r) / d + 2; break;
+				case b: h = (r - g) / d + 4; break;
+				default: break;
+			}
+			h /= 6;
+		}
+		return [h, s, v];
 	};
 	this.getPixel = function (pixels,x,y,width,height){
 		var pix = (y*width + x)*4;
@@ -64,10 +64,10 @@ function FilterUtils(){
 			pixels[((this.clampPixel(y, 0, height-1) * width) + this.clampPixel(x, 0, width-1))*4 + 3]];
 		}
 		return [pixels[pix],pixels[pix+1],pixels[pix+2],pixels[pix+3]];
-  };
-   var haveNextGaussian = false;
-   var nextGaussian;
-   this.gaussianRandom = function(){
+	};
+	var haveNextGaussian = false;
+	var nextGaussian;
+	this.gaussianRandom = function(){
 		if(haveNextGaussian){
 			haveNextGaussian = false;
 			return nextGaussian;
@@ -83,150 +83,150 @@ function FilterUtils(){
 			haveNextGaussian = true;
 			return v1 * mult;
 		}
-  };
-   this.clampPixel = function (x,a,b){
+	};
+	this.clampPixel = function (x,a,b){
 		return (x < a) ? a : (x > b) ? b : x;
-   };
-   this.triangle = function(x){
+	};
+	this.triangle = function(x){
 		var r = this.mod(x, 1);
 		return 2*(r < 0.5 ? r : 1-r);
-   };
-   this.mod = function(a,b){
+	};
+	this.mod = function(a,b){
 		var n = parseInt(a/b,10);
 		a -= n*b;
 		if(a < 0){
 			return a + b;
 		}
 		return a;
-   };
-  this.mixColors = function(t, rgb1, rgb2){
-	var r = this.linearInterpolate(t,rgb1[0],rgb2[0]);
-	var g = this.linearInterpolate(t,rgb1[1],rgb2[1]);
-	var b = this.linearInterpolate(t,rgb1[2],rgb2[2]);
-	var a = this.linearInterpolate(t,rgb1[3],rgb2[3]);
-	return [r,g,b,a];
-  };
-  
-  this.linearInterpolate = function(t,a,b){
-	return a + t * (b-a);
-  };
-  this.bilinearInterpolate = function (x,y,nw,ne,sw,se){
-	var m0, m1;
-	var r0 = nw[0]; var g0 = nw[1]; var b0 = nw[2]; var a0 = nw[3];
-	var r1 = ne[0]; var g1 = ne[1]; var b1 = ne[2]; var a1 = ne[3];
-	var r2 = sw[0]; var g2 = sw[1]; var b2 = sw[2]; var a2 = sw[3];
-	var r3 = se[0]; var g3 = se[1]; var b3 = se[2]; var a3 = se[3];
-	var cx = 1.0 - x; var cy = 1.0 - y;
-	
-	m0 = cx * a0 + x * a1;
-	m1 = cx * a2 + x * a3;
-	var a = cy * m0 + y * m1;
-	
-	m0 = cx * r0 + x * r1;
-	m1 = cx * r2 + x * r3;
-	var r = cy * m0 + y * m1;
-	
-	m0 = cx * g0 + x * g1;
-	m1 = cx * g2 + x * g3;
-	var g = cy * m0 + y * m1;
-	
-	m0 = cx * b0 + x * b1;
-	m1 = cx * b2 + x * b3;
-	var b =cy * m0 + y * m1;
-	return [r,g,b,a];
-  };
-  this.tableFilter = function (inputData, table, width, height){
-	for (var y = 0; y < height; y++) {
-		for (var x = 0; x < width; x++) {
-		    var pixel = (y*width + x)*4;
-		    for(var i = 0; i < 3; i++){
-		    	inputData[pixel+i] = table[inputData[pixel+i]];
-			}
-		}   
-	}
-  };
-  this.convolveFilter = function(inputData, matrix, width, height){
-	var outputData = [];
-	var rows, cols;
-	rows = cols = Math.sqrt(matrix.length);
-	var rows2 = parseInt(rows/2,10);
-	var cols2 = parseInt(cols/2,10);
-	var trace = true;
-	for(var y = 0; y < height; y++){
- 		for (var x = 0; x < width; x++){
- 			var pixel = (y*width + x)*4;
- 			var r = 0, g = 0, b = 0;
- 			for(var row = -rows2; row <= rows2; row++){
- 				var iy = y+row;
-				var ioffset;
-				if (0 <= iy && iy < height) {
-					ioffset = iy*width;
-				} else {
-					ioffset = y*width;
+	};
+	this.mixColors = function(t, rgb1, rgb2){
+		var r = this.linearInterpolate(t,rgb1[0],rgb2[0]);
+		var g = this.linearInterpolate(t,rgb1[1],rgb2[1]);
+		var b = this.linearInterpolate(t,rgb1[2],rgb2[2]);
+		var a = this.linearInterpolate(t,rgb1[3],rgb2[3]);
+		return [r,g,b,a];
+	};
+
+	this.linearInterpolate = function(t,a,b){
+		return a + t * (b-a);
+	};
+	this.bilinearInterpolate = function (x,y,nw,ne,sw,se){
+		var m0, m1;
+		var r0 = nw[0]; var g0 = nw[1]; var b0 = nw[2]; var a0 = nw[3];
+		var r1 = ne[0]; var g1 = ne[1]; var b1 = ne[2]; var a1 = ne[3];
+		var r2 = sw[0]; var g2 = sw[1]; var b2 = sw[2]; var a2 = sw[3];
+		var r3 = se[0]; var g3 = se[1]; var b3 = se[2]; var a3 = se[3];
+		var cx = 1.0 - x; var cy = 1.0 - y;
+
+		m0 = cx * a0 + x * a1;
+		m1 = cx * a2 + x * a3;
+		var a = cy * m0 + y * m1;
+
+		m0 = cx * r0 + x * r1;
+		m1 = cx * r2 + x * r3;
+		var r = cy * m0 + y * m1;
+
+		m0 = cx * g0 + x * g1;
+		m1 = cx * g2 + x * g3;
+		var g = cy * m0 + y * m1;
+
+		m0 = cx * b0 + x * b1;
+		m1 = cx * b2 + x * b3;
+		var b =cy * m0 + y * m1;
+		return [r,g,b,a];
+	};
+	this.tableFilter = function (inputData, table, width, height){
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				for(var i = 0; i < 3; i++){
+					inputData[pixel+i] = table[inputData[pixel+i]];
 				}
-				var moffset = cols*(row+rows2)+cols2;
-				for (var col = -cols2; col <= cols2; col++) {
-					var f = matrix[moffset+col];
-					if (f !== 0) {
-						var ix = x+col;
-						if (!(0 <= ix && ix < width)) {
+			}
+		}
+	};
+	this.convolveFilter = function(inputData, matrix, width, height){
+		var outputData = [];
+		var rows, cols;
+		rows = cols = Math.sqrt(matrix.length);
+		var rows2 = parseInt(rows/2,10);
+		var cols2 = parseInt(cols/2,10);
+		var trace = true;
+		for(var y = 0; y < height; y++){
+			for (var x = 0; x < width; x++){
+				var pixel = (y*width + x)*4;
+				var r = 0, g = 0, b = 0;
+				for(var row = -rows2; row <= rows2; row++){
+					var iy = y+row;
+					var ioffset;
+					if (0 <= iy && iy < height) {
+						ioffset = iy*width;
+					} else {
+						ioffset = y*width;
+					}
+					var moffset = cols*(row+rows2)+cols2;
+					for (var col = -cols2; col <= cols2; col++) {
+						var f = matrix[moffset+col];
+						if (f !== 0) {
+							var ix = x+col;
+							if (!(0 <= ix && ix < width)) {
 								ix = x;
+							}
+							var iPixel = (ioffset+ix)*4;
+							r += f * inputData[iPixel];
+							g += f * inputData[iPixel+1];
+							b += f * inputData[iPixel+2];
 						}
-						var iPixel = (ioffset+ix)*4;
-						r += f * inputData[iPixel];
-						g += f * inputData[iPixel+1];
-						b += f * inputData[iPixel+2];
 					}
 				}
- 			}
- 			outputData[pixel] = parseInt(r+0.5,10);
- 			outputData[pixel+1] = parseInt(g+0.5,10);
- 			outputData[pixel+2] = parseInt(b+0.5,10);
- 			outputData[pixel+3] = inputData[pixel+3];
- 		}
- 	}
-	for(var k = 0; k < outputData.length; k++){
-  		inputData[k] = outputData[k];
-  	}
- };
-  this.transformFilter = function(inputData, transformInverse, width, height){
-  	var out = [];
-  	var outputData = [];
-  	for(var j = 0; j < inputData.length; j++){
-  		outputData[j] = inputData[j];
-  	}
-  	for(var y = 0; y < height; y++){
- 		for (var x = 0; x < width; x++){
- 			var pixel = (y*width + x)*4;
-			transformInverse.apply(this,[x,y,out]);
-		  	var srcX = Math.floor(out[0]);
-		  	var srcY = Math.floor(out[1]);
-		  	var xWeight = out[0]-srcX;
-		  	var yWeight = out[1]-srcY;
-		  	var nw,ne,sw,se;
-		  	if(srcX >= 0 && srcX < width-1 && srcY >= 0 && srcY < height-1){
-		  		var i = (width*srcY + srcX)*4;
-		  		nw = [inputData[i],inputData[i+1],inputData[i+2],inputData[i+3]];
-		  		ne = [inputData[i+4],inputData[i+5],inputData[i+6],inputData[i+7]];
-		  		sw = [inputData[i+width*4],inputData[i+width*4+1],inputData[i+width*4+2],inputData[i+width*4+3]];
-		  		se = [inputData[i+(width + 1)*4],inputData[i+(width + 1)*4+1],inputData[i+(width + 1)*4+2],inputData[i+(width + 1)*4+3]];
-		  	} else {
-	  			nw = this.getPixel( inputData, srcX, srcY, width, height );
-				ne = this.getPixel( inputData, srcX+1, srcY, width, height );
-				sw = this.getPixel( inputData, srcX, srcY+1, width, height );
-				se = this.getPixel( inputData, srcX+1, srcY+1, width, height );
-		  	}
-		  	var rgba = this.bilinearInterpolate(xWeight,yWeight,nw,ne,sw,se);
-			outputData[pixel] = rgba[0];
-			outputData[pixel + 1] = rgba[1];
-			outputData[pixel + 2] = rgba[2];
-			outputData[pixel + 3] = rgba[3];
- 		}
- 	}
- 	for(var k = 0; k < outputData.length; k++){
-  		inputData[k] = outputData[k];
-  	}
-  };
+				outputData[pixel] = parseInt(r+0.5,10);
+				outputData[pixel+1] = parseInt(g+0.5,10);
+				outputData[pixel+2] = parseInt(b+0.5,10);
+				outputData[pixel+3] = inputData[pixel+3];
+			}
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
+	this.transformFilter = function(inputData, transformInverse, width, height){
+		var out = [];
+		var outputData = [];
+		for(var j = 0; j < inputData.length; j++){
+			outputData[j] = inputData[j];
+		}
+		for(var y = 0; y < height; y++){
+			for (var x = 0; x < width; x++){
+				var pixel = (y*width + x)*4;
+				transformInverse.apply(this,[x,y,out]);
+				var srcX = Math.floor(out[0]);
+				var srcY = Math.floor(out[1]);
+				var xWeight = out[0]-srcX;
+				var yWeight = out[1]-srcY;
+				var nw,ne,sw,se;
+				if(srcX >= 0 && srcX < width-1 && srcY >= 0 && srcY < height-1){
+					var i = (width*srcY + srcX)*4;
+					nw = [inputData[i],inputData[i+1],inputData[i+2],inputData[i+3]];
+					ne = [inputData[i+4],inputData[i+5],inputData[i+6],inputData[i+7]];
+					sw = [inputData[i+width*4],inputData[i+width*4+1],inputData[i+width*4+2],inputData[i+width*4+3]];
+					se = [inputData[i+(width + 1)*4],inputData[i+(width + 1)*4+1],inputData[i+(width + 1)*4+2],inputData[i+(width + 1)*4+3]];
+				} else {
+					nw = this.getPixel( inputData, srcX, srcY, width, height );
+					ne = this.getPixel( inputData, srcX+1, srcY, width, height );
+					sw = this.getPixel( inputData, srcX, srcY+1, width, height );
+					se = this.getPixel( inputData, srcX+1, srcY+1, width, height );
+				}
+				var rgba = this.bilinearInterpolate(xWeight,yWeight,nw,ne,sw,se);
+				outputData[pixel] = rgba[0];
+				outputData[pixel + 1] = rgba[1];
+				outputData[pixel + 2] = rgba[2];
+				outputData[pixel + 3] = rgba[3];
+			}
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Blurs the image with Gaussian blur.
@@ -349,14 +349,14 @@ function BrightnessFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var hsv = filterUtils.RGBtoHSV(inputData[pixel],inputData[pixel+1],inputData[pixel+2]);
-	            hsv[2] += amount;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var hsv = filterUtils.RGBtoHSV(inputData[pixel],inputData[pixel+1],inputData[pixel+2]);
+				hsv[2] += amount;
 				if(hsv[2] < 0){
 					hsv[2] = 0;
 				} else if (hsv[2] > 1){ 
@@ -366,9 +366,9 @@ function BrightnessFilter(){
 				for(var i = 0; i < 3; i++){
 					inputData[pixel+i] = rgb[i];
 				}
-	        }   
-	    }
-	};			
+			}
+		}
+	};
 }
 /**
  * Embosses the edges of the image.
@@ -385,12 +385,12 @@ function BumpFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var matrix = [-1,-1, 0,
-	  				  -1, 1, 1,
-	  				   0, 1, 1];
-	  	filterUtils.convolveFilter(inputData,matrix,width,height);
-	};			
+		var inputData = input.data;
+		var matrix = [-1,-1, 0,
+					  -1, 1, 1,
+					   0, 1, 1];
+		filterUtils.convolveFilter(inputData,matrix,width,height);
+	};
 }
 /**
  * Smears out the image with circular shapes to create a painting style effect.
@@ -414,41 +414,41 @@ function CircleSmearFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	 for(var j = 0; j < inputData.length; j++){
-  			outputData[j] = inputData[j];
-  		}
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var size = (values.size === undefined) ? this.defaultValues.size : values.size;
-	  	if(size < 1){ size = 1;}
-	  	size = parseInt(size,10);
-	  	var density = (values.density === undefined) ? this.defaultValues.density : values.density;
-	  	var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
-	  	var radius = size+1;
-	  	var radius2 = radius*radius;
-	  	var numShapes = parseInt(2*density/30*width*height / 2,10);
-	  	for(var i = 0; i < numShapes; i++){
-	  		var sx = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
-	  		var sy = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
-	  		var rgb2 = [inputData[(sy*width+sx)*4],inputData[(sy*width+sx)*4+1],inputData[(sy*width+sx)*4+2],inputData[(sy*width+sx)*4+3]];
+		var inputData = input.data;
+		var outputData = [];
+		 for(var j = 0; j < inputData.length; j++){
+			outputData[j] = inputData[j];
+		}
+		if(values === undefined){ values = this.defaultValues; }
+		var size = (values.size === undefined) ? this.defaultValues.size : values.size;
+		if(size < 1){ size = 1;}
+		size = parseInt(size,10);
+		var density = (values.density === undefined) ? this.defaultValues.density : values.density;
+		var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
+		var radius = size+1;
+		var radius2 = radius*radius;
+		var numShapes = parseInt(2*density/30*width*height / 2,10);
+		for(var i = 0; i < numShapes; i++){
+			var sx = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
+			var sy = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
+			var rgb2 = [inputData[(sy*width+sx)*4],inputData[(sy*width+sx)*4+1],inputData[(sy*width+sx)*4+2],inputData[(sy*width+sx)*4+3]];
 			for(var x = sx - radius; x < sx + radius + 1; x++){
 				for(var y = sy - radius; y < sy + radius + 1; y++){
 					var f = (x - sx) * (x - sx) + (y - sy) * (y - sy);
 					if (x >= 0 && x < width && y >= 0 && y < height && f <= radius2) {
 						var rgb1 = [outputData[(y*width+x)*4],outputData[(y*width+x)*4+1],outputData[(y*width+x)*4+2],outputData[(y*width+x)*4+3]];
 						var mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-		            	for(var k = 0; k < 3; k++){
-		            		outputData[(y*width+x)*4+k] = mixedRGB[k];
-		            	}
-		            }
+						for(var k = 0; k < 3; k++){
+							outputData[(y*width+x)*4+k] = mixedRGB[k];
+						}
+					}
 				}
 			}
-	  	}
-	    for(var l = 0; l < outputData.length; l++){
-  			inputData[l] = outputData[l];
-  		}
-	};			
+		}
+		for(var l = 0; l < outputData.length; l++){
+			inputData[l] = outputData[l];
+		}
+	};
 }
 /**
  * Adjusts the contrast of the image.
@@ -471,18 +471,18 @@ function ContrastFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
 		if(amount < 0){
 			amount = 0.0;
 		}
 		var table = [];
-		
+
 		for(var i = 0; i < 256; i++){
 			table[i] = parseInt(255 * (((i/255)-0.5)*amount+0.5),10);
 		}
-	    filterUtils.tableFilter(inputData,table,width,height);
+		filterUtils.tableFilter(inputData,table,width,height);
 	};
 }
 /**
@@ -506,51 +506,51 @@ function CrossSmearFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	 for(var j = 0; j < inputData.length; j++){
-  			outputData[j] = inputData[j];
-  		}
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var distance = (values.distance === undefined) ? this.defaultValues.distance : values.distance;
-	  	if(distance < 0){ distance = 0;}
-	  	distance = parseInt(distance,10);
-	  	var density = (values.density === undefined) ? this.defaultValues.density : values.density;
-	  	var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
-	  	var numShapes = parseInt(2*density*width * height / (distance + 1),10);
-	  	for(var i = 0; i < numShapes; i++){
-	  		var x = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
-	  		var y = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
-	  		var length = (Math.random()*Math.pow(2,32)) % distance + 1;
-	  		var rgb2 = [inputData[(y*width+x)*4],inputData[(y*width+x)*4+1],inputData[(y*width+x)*4+2],inputData[(y*width+x)*4+3]];
-	  		var rgb1;
-	  		var mixedRGB;
-	  		var k;
-	  		for (var x1 = x-length; x1 < x+length+1; x1++) {
-	            if(x1 >= 0 && x1 < width){
-	            	rgb1 = [outputData[(y*width+x1)*4],outputData[(y*width+x1)*4+1],outputData[(y*width+x1)*4+2],outputData[(y*width+x1)*4+3]];
-	            	mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-	            	for(k = 0; k < 3; k++){
-	            		outputData[(y*width+x1)*4+k] = mixedRGB[k];
-	            	}
-	            }
-		            
-	        } 
-	  		for (var y1 = y-length; y1 < y+length+1; y1++) {
-	            if(y1 >= 0 && y1 < height){
-	            	rgb1 = [outputData[(y1*width+x)*4],outputData[(y1*width+x)*4+1],outputData[(y1*width+x)*4+2],outputData[(y1*width+x)*4+3]];
-	            	mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-	            	for(k = 0; k < 3; k++){
-	            		outputData[(y1*width+x)*4+k] = mixedRGB[k];
-	            	}
-	            }
-		            
-	        } 
-	  	}
-	    for(var l = 0; l < outputData.length; l++){
-  			inputData[l] = outputData[l];
-  		}
-	};			
+		var inputData = input.data;
+		var outputData = [];
+		 for(var j = 0; j < inputData.length; j++){
+			outputData[j] = inputData[j];
+		}
+		if(values === undefined){ values = this.defaultValues; }
+		var distance = (values.distance === undefined) ? this.defaultValues.distance : values.distance;
+		if(distance < 0){ distance = 0;}
+		distance = parseInt(distance,10);
+		var density = (values.density === undefined) ? this.defaultValues.density : values.density;
+		var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
+		var numShapes = parseInt(2*density*width * height / (distance + 1),10);
+		for(var i = 0; i < numShapes; i++){
+			var x = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
+			var y = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
+			var length = (Math.random()*Math.pow(2,32)) % distance + 1;
+			var rgb2 = [inputData[(y*width+x)*4],inputData[(y*width+x)*4+1],inputData[(y*width+x)*4+2],inputData[(y*width+x)*4+3]];
+			var rgb1;
+			var mixedRGB;
+			var k;
+			for (var x1 = x-length; x1 < x+length+1; x1++) {
+				if(x1 >= 0 && x1 < width){
+					rgb1 = [outputData[(y*width+x1)*4],outputData[(y*width+x1)*4+1],outputData[(y*width+x1)*4+2],outputData[(y*width+x1)*4+3]];
+					mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
+					for(k = 0; k < 3; k++){
+						outputData[(y*width+x1)*4+k] = mixedRGB[k];
+					}
+				}
+
+			} 
+			for (var y1 = y-length; y1 < y+length+1; y1++) {
+				if(y1 >= 0 && y1 < height){
+					rgb1 = [outputData[(y1*width+x)*4],outputData[(y1*width+x)*4+1],outputData[(y1*width+x)*4+2],outputData[(y1*width+x)*4+3]];
+					mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
+					for(k = 0; k < 3; k++){
+						outputData[(y1*width+x)*4+k] = mixedRGB[k];
+					}
+				}
+
+			} 
+		}
+		for(var l = 0; l < outputData.length; l++){
+			inputData[l] = outputData[l];
+		}
+	};
 }
 /**
  * Diffuses the image creating a frosted glass effect.
@@ -567,26 +567,26 @@ function DiffusionFilter(){
 
 	var filterUtils = new FilterUtils();
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var scale = (values.scale === undefined) ? this.defaultValues.scale : values.scale; 
-	  	var out = [];
-	  	var outputData = [];
-	  	var sinTable = [];
-	  	var cosTable = [];
-	  	for(var i = 0; i < 256; i++){
-	  		var angle = Math.PI*2*i/256;
-	  		sinTable[i] = scale*Math.sin(angle);
-	  		cosTable[i] = scale*Math.cos(angle);
-	  	}
-	  	transInverse = function (x,y,out){
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var scale = (values.scale === undefined) ? this.defaultValues.scale : values.scale; 
+		var out = [];
+		var outputData = [];
+		var sinTable = [];
+		var cosTable = [];
+		for(var i = 0; i < 256; i++){
+			var angle = Math.PI*2*i/256;
+			sinTable[i] = scale*Math.sin(angle);
+			cosTable[i] = scale*Math.cos(angle);
+		}
+		transInverse = function (x,y,out){
 			var angle = parseInt(Math.random() * 255,10);
 			var distance = Math.random();
 			out[0] = x + distance * sinTable[angle];
 			out[1] = y + distance * cosTable[angle];
-	  	};
-	  	filterUtils.transformFilter(inputData,transInverse,width,height);
+		};
+		filterUtils.transformFilter(inputData,transInverse,width,height);
   };
 }
 /**
@@ -608,18 +608,18 @@ function DitherFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	var i, j;
-	  	for (j=0; j < inputData.length; j++) {
+		var inputData = input.data;
+		var outputData = [];
+		var i, j;
+		for (j=0; j < inputData.length; j++) {
 			outputData[j] = 0;
 		}
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var levels = (values.levels === undefined) ? this.defaultValues.levels : values.levels;
-	  	var color = (values.color === undefined) ? this.defaultValues.color : values.color;
-	  	if(levels <= 1){
-	  		levels = 1;
-	  	}
+		if(values === undefined){ values = this.defaultValues; }
+		var levels = (values.levels === undefined) ? this.defaultValues.levels : values.levels;
+		var color = (values.color === undefined) ? this.defaultValues.color : values.color;
+		if(levels <= 1){
+			levels = 1;
+		}
 		var matrix = [0,0,0,
 					  0,0,7,
 					  3,5,1];
@@ -635,27 +635,27 @@ function DitherFilter(){
 			div[i] = parseInt(levels*i / 256,10);
 		}
 	  	for (var y = 0; y < height; y++) {
-	  		var reverse = ((y & 1) == 1);
-	  		var direction;
-	  		if(reverse){
-	  			index = (y*width+width-1)*4;
-	  			direction = -1;
-	  		} else {
-	  			index = y*width*4;
-	  			direction = 1;
-	  		}
-	        for (var x = 0; x < width; x++) {
-	            var r1 = inputData[index]; var g1 = inputData[index+1]; var b1 = inputData[index+2];
-	            if(!color){
-	            	r1 = g1 = b1 = parseInt((r1+g1+b1) / 3,10);
-	            }
-	            var r2 = map[div[r1]];var g2 = map[div[g1]];var b2 = map[div[b1]];
-	            
-	            outputData[index] = r2; outputData[index + 1] = g2; outputData[index+2] = b2; outputData[index+3] = inputData[index+3];
-	            
-	            var er = r1-r2; var eg = g1-g2; var eb = b1-b2;
-	            
-	            for (i = -1; i <= 1; i++) {
+			var reverse = ((y & 1) == 1);
+			var direction;
+			if(reverse){
+				index = (y*width+width-1)*4;
+				direction = -1;
+			} else {
+				index = y*width*4;
+				direction = 1;
+			}
+			for (var x = 0; x < width; x++) {
+				var r1 = inputData[index]; var g1 = inputData[index+1]; var b1 = inputData[index+2];
+				if(!color){
+					r1 = g1 = b1 = parseInt((r1+g1+b1) / 3,10);
+				}
+				var r2 = map[div[r1]];var g2 = map[div[g1]];var b2 = map[div[b1]];
+
+				outputData[index] = r2; outputData[index + 1] = g2; outputData[index+2] = b2; outputData[index+3] = inputData[index+3];
+
+				var er = r1-r2; var eg = g1-g2; var eb = b1-b2;
+
+				for (i = -1; i <= 1; i++) {
 					var iy = i+y;
 					if (0 <= iy && iy < height) {
 						for (j = -1; j <= 1; j++) {
@@ -680,10 +680,10 @@ function DitherFilter(){
 				}
 				index += direction*4;
 			}
-	    }
-	    for(j = 0; j < outputData.length; j++){
-	  		inputData[j] = outputData[j];
-	  	}
+		}
+		for(j = 0; j < outputData.length; j++){
+			inputData[j] = outputData[j];
+		}
 	};
 }
 /** 
@@ -697,61 +697,61 @@ function EdgeFilter(){
 	this.valueRanges = {
 	};
 	var matrixH = [-1,-2,-1,
-		 			0, 0, 0,
-		 			1, 2, 1];
+					0, 0, 0,
+					1, 2, 1];
 	var matrixV = [-1, 0, 1,
-		 		   -2, 0, 2,
-		 		   -1, 0, 1];
+				   -2, 0, 2,
+				   -1, 0, 1];
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var rh = 0; gh = 0; bh = 0;
-	            var rv = 0; gv = 0; bv = 0;
-	            for(var row = -1; row <= 1; row++){
-	            	var iy = y+row;
-	            	var ioffset;
-	            	if(iy >= 0 && iy < height){
-	            		ioffset = iy*width*4;
-	            	} else {
-	            		ioffset = y*width*4;
-	            	}
-	            	var moffset = 3*(row+1)+1;
-	            	for(var col = -1; col <= 1; col++){
-	            		var ix = x+col;
-	            		if(!(ix >= 0 && ix < width)){
-	            			ix = x;
-	            		}
-	            		ix *= 4;
-	            		var r = inputData[ioffset+ix];
-	            		var g = inputData[ioffset+ix+1];
-	            		var b = inputData[ioffset+ix+2];
-	            		var h = matrixH[moffset+col];
-	            		var v = matrixV[moffset+col];
-	            		rh += parseInt(h*r,10);
-	            		bh += parseInt(h*g,10);
-	            		gh += parseInt(h*b,10);
-	            		rv += parseInt(v*r,10);
-	            		gv += parseInt(v*g,10);
-	            		bv += parseInt(v*b,10);
-	            	}
-	            }
-	            r = parseInt(Math.sqrt(rh*rh + rv*rv) / 1.8,10);
-	            g = parseInt(Math.sqrt(gh*gh + gv*gv) / 1.8,10);
-	            b = parseInt(Math.sqrt(bh*bh + bv*bv) / 1.8,10);
-	            
-	            outputData[pixel] = r;
-	            outputData[pixel+1] = g;
-	            outputData[pixel+2] = b;
-	            outputData[pixel+3] = inputData[pixel+3];
-	        }   
-	    }
-	    for(var k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-	  	}
+		var inputData = input.data;
+		var outputData = [];
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var rh = 0; gh = 0; bh = 0;
+				var rv = 0; gv = 0; bv = 0;
+				for(var row = -1; row <= 1; row++){
+					var iy = y+row;
+					var ioffset;
+					if(iy >= 0 && iy < height){
+						ioffset = iy*width*4;
+					} else {
+						ioffset = y*width*4;
+					}
+					var moffset = 3*(row+1)+1;
+					for(var col = -1; col <= 1; col++){
+						var ix = x+col;
+						if(!(ix >= 0 && ix < width)){
+							ix = x;
+						}
+						ix *= 4;
+						var r = inputData[ioffset+ix];
+						var g = inputData[ioffset+ix+1];
+						var b = inputData[ioffset+ix+2];
+						var h = matrixH[moffset+col];
+						var v = matrixV[moffset+col];
+						rh += parseInt(h*r,10);
+						bh += parseInt(h*g,10);
+						gh += parseInt(h*b,10);
+						rv += parseInt(v*r,10);
+						gv += parseInt(v*g,10);
+						bv += parseInt(v*b,10);
+					}
+				}
+				r = parseInt(Math.sqrt(rh*rh + rv*rv) / 1.8,10);
+				g = parseInt(Math.sqrt(gh*gh + gv*gv) / 1.8,10);
+				b = parseInt(Math.sqrt(bh*bh + bv*bv) / 1.8,10);
+
+				outputData[pixel] = r;
+				outputData[pixel+1] = g;
+				outputData[pixel+2] = b;
+				outputData[pixel+3] = inputData[pixel+3];
+			}   
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
 	};
 }
 /**
@@ -769,20 +769,20 @@ function EmbossFilter(){
 	this.valueRanges = {
 		height : {min:1, max:10},
 		angle : {min:0, max:360},
-	    elevation : {min:0, max:180}
+		elevation : {min:0, max:180}
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var bumpHeight = (values.height === undefined) ? this.defaultValues.height : values.height;
-	  	var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle;
-	  	var elevation = (values.elevation === undefined) ? this.defaultValues.elevation : values.elevation; 
-	  	angle = angle / 180 * Math.PI;
-	  	elevation = elevation / 180 * Math.PI;
-	  	var width45 = 3 * bumpHeight;
-	  	var pixelScale = 255.9;
-		
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var bumpHeight = (values.height === undefined) ? this.defaultValues.height : values.height;
+		var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle;
+		var elevation = (values.elevation === undefined) ? this.defaultValues.elevation : values.elevation; 
+		angle = angle / 180 * Math.PI;
+		elevation = elevation / 180 * Math.PI;
+		var width45 = 3 * bumpHeight;
+		var pixelScale = 255.9;
+
 		var bumpPixels = [];
 		var bumpMapWidth = width;
 		var bumpMapHeight = height;
@@ -791,11 +791,11 @@ function EmbossFilter(){
 		}
 		var Nx, Ny, Nz, Lx, Ly, Lz, Nz2, NzLz, NdotL;
 		var shade, background;
-		
+
 		Lx = parseInt(Math.cos(angle) * Math.cos(elevation) * pixelScale,10);
 		Ly = parseInt(Math.sin(angle) * Math.cos(elevation) * pixelScale,10);
 		Lz = parseInt(Math.sin(elevation) * pixelScale,10);
-		
+
 		Nz = parseInt(6 * 255 / width45,10);
 		Nz2 = Nz * Nz;
 		NzLz = Nz * Lz;
@@ -803,13 +803,13 @@ function EmbossFilter(){
 
 		var bumpIndex = 0;
 		
-	  	for (var y = 0; y < height; y++, bumpIndex += bumpMapWidth) {
-	  		var s1 = bumpIndex;
+		for (var y = 0; y < height; y++, bumpIndex += bumpMapWidth) {
+			var s1 = bumpIndex;
 			var s2 = s1 + bumpMapWidth;
 			var s3 = s2 + bumpMapWidth;
-	        for (var x = 0; x < width; x++, s1++, s2++, s3++) {
-	            var pixel = (y*width + x)*4;
-	            if (y !== 0 && y < height-2 && x !== 0 && x < width-2) {
+			for (var x = 0; x < width; x++, s1++, s2++, s3++) {
+				var pixel = (y*width + x)*4;
+				if (y !== 0 && y < height-2 && x !== 0 && x < width-2) {
 					Nx = bumpPixels[s1-1] + bumpPixels[s2-1] + bumpPixels[s3-1] - bumpPixels[s1+1] - bumpPixels[s2+1] - bumpPixels[s3+1];
 					Ny = bumpPixels[s3-1] + bumpPixels[s3] + bumpPixels[s3+1] - bumpPixels[s1-1] - bumpPixels[s1] - bumpPixels[s1+1];
 					if (Nx === 0 && Ny === 0){
@@ -823,8 +823,8 @@ function EmbossFilter(){
 					shade = background;
 				}
 				inputData[pixel] = inputData[pixel+1] = inputData[pixel+2] = shade;
-	        }   
-	    }
+			}   
+		}
 	};
 }
 /**
@@ -843,15 +843,15 @@ function ExposureFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var exposure = (values.exposure === undefined) ? this.defaultValues.exposure : values.exposure;
-  		var table = [];
-  		for(var i = 0; i < 256; i++){
-  			table[i] = parseInt(255 *(1-Math.exp(-(i/255) * exposure)),10);
-  		}
-	  	filterUtils.tableFilter(inputData, table, width, height);
-	};		
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var exposure = (values.exposure === undefined) ? this.defaultValues.exposure : values.exposure;
+		var table = [];
+		for(var i = 0; i < 256; i++){
+			table[i] = parseInt(255 *(1-Math.exp(-(i/255) * exposure)),10);
+		}
+		filterUtils.tableFilter(inputData, table, width, height);
+	};
 }
 /**
  * Adjusts the gain and bias of the image. Gain alters the contrast while bias biases
@@ -873,10 +873,10 @@ function GainFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var gain = (values.gain === undefined) ? this.defaultValues.gain : values.gain;
-	  	var bias = (values.bias === undefined) ? this.defaultValues.bias : values.bias;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var gain = (values.gain === undefined) ? this.defaultValues.gain : values.gain;
+		var bias = (values.bias === undefined) ? this.defaultValues.bias : values.bias;
 		
 		var table = [];
 		
@@ -887,7 +887,7 @@ function GainFilter(){
 			val /= (1/bias-2)*(1-val)+1; 
 			table[i] = parseInt(255 * val,10);
 		}
-	    filterUtils.tableFilter(inputData,table,width,height);
+		filterUtils.tableFilter(inputData,table,width,height);
 	};
 }
 /**
@@ -904,9 +904,9 @@ function GammaFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
 		if(amount < 0){
 			amount = 0.0;
 		}
@@ -936,14 +936,14 @@ function GrayscaleFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var luma = inputData[pixel]*0.3 + inputData[pixel+1]*0.59 + inputData[pixel+2]*0.11;
-	            inputData[pixel] = inputData[pixel+1] = inputData[pixel+2] = luma;
-	        }   
-	    }
+		var inputData = input.data;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var luma = inputData[pixel]*0.3 + inputData[pixel+1]*0.59 + inputData[pixel+2]*0.11;
+				inputData[pixel] = inputData[pixel+1] = inputData[pixel+2] = luma;
+			}   
+		}
 	};
 }
 /**
@@ -962,24 +962,24 @@ function HueFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var hsv = filterUtils.RGBtoHSV(inputData[pixel],inputData[pixel+1],inputData[pixel+2]);
-	            hsv[0] += amount;
-	            while(hsv[0] < 0){
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var hsv = filterUtils.RGBtoHSV(inputData[pixel],inputData[pixel+1],inputData[pixel+2]);
+				hsv[0] += amount;
+				while(hsv[0] < 0){
 					hsv[0] += 360;
 				}
 				var rgb = filterUtils.HSVtoRGB(hsv[0],hsv[1],hsv[2]);
 				for(var i = 0; i < 3; i++){
 					inputData[pixel+i] = rgb[i];
 				}
-	        }   
-	    }
-	};			
+			}   
+		}
+	};
 }
 /**
  * Inverts the colors of the image.
@@ -993,15 +993,15 @@ function InvertFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            for(var i = 0; i < 3; i++){
-	            	inputData[pixel+i] = 255 - inputData[pixel+i];
-	            }
-	        }   
-	    }
+		var inputData = input.data;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				for(var i = 0; i < 3; i++){
+					inputData[pixel+i] = 255 - inputData[pixel+i];
+				}
+			}   
+		}
 	};
 }
 /**
@@ -1028,29 +1028,29 @@ function KaleidoscopeFilter(){
 
 	var filterUtils = new FilterUtils();
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle; 
-	  	var rotation = (values.rotation === undefined) ? this.defaultValues.rotation : values.rotation; 
-	  	var sides = (values.sides === undefined) ? this.defaultValues.sides : values.sides; 
-	  	var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
-	  	var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
-	  	var iCenterX = width * centerX; var iCenterY = height * centerY;
-	  	angle = angle/180 * Math.PI;
-	  	rotation = rotation/180 * Math.PI;
-	  	var transInverse = function(x,y,out){
-	  		var dx = x - iCenterX;
-	  		var dy = y - iCenterY;
-	  		var r = Math.sqrt(dx*dx + dy*dy);
-	  		var theta = Math.atan2(dy,dx) - angle - rotation;
-	  		theta = filterUtils.triangle(theta/Math.PI*sides*0.5);
-	  		theta += angle;
-	  		out[0] = iCenterX + r*Math.cos(theta);
-	  		out[1] = iCenterY + r*Math.sin(theta);
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle; 
+		var rotation = (values.rotation === undefined) ? this.defaultValues.rotation : values.rotation; 
+		var sides = (values.sides === undefined) ? this.defaultValues.sides : values.sides; 
+		var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
+		var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
+		var iCenterX = width * centerX; var iCenterY = height * centerY;
+		angle = angle/180 * Math.PI;
+		rotation = rotation/180 * Math.PI;
+		var transInverse = function(x,y,out){
+			var dx = x - iCenterX;
+			var dy = y - iCenterY;
+			var r = Math.sqrt(dx*dx + dy*dy);
+			var theta = Math.atan2(dy,dx) - angle - rotation;
+			theta = filterUtils.triangle(theta/Math.PI*sides*0.5);
+			theta += angle;
+			out[0] = iCenterX + r*Math.cos(theta);
+			out[1] = iCenterY + r*Math.sin(theta);
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-   };
+	};
 }
 /**
  * Applies a fisheye lens distortion effect on the image. CenterX and CenterY specify the
@@ -1073,37 +1073,37 @@ function LensDistortionFilter(){
 	};
 
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var refraction = (values.refraction === undefined) ? this.defaultValues.refraction : values.refraction; 
-	  	var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
-	  	var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
-	  	var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
-	  	var radius2 = radius*radius;
-	  	var iCenterX = width * centerX; var iCenterY = height * centerY;
-	  	var transInverse = function(x,y,out){
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var refraction = (values.refraction === undefined) ? this.defaultValues.refraction : values.refraction; 
+		var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
+		var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
+		var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
+		var radius2 = radius*radius;
+		var iCenterX = width * centerX; var iCenterY = height * centerY;
+		var transInverse = function(x,y,out){
 			var dx = x-iCenterX;
-		  	var dy = y-iCenterY;
-		  	var x2 = dx*dx;
+			var dy = y-iCenterY;
+			var x2 = dx*dx;
 			var y2 = dy*dy;
 			if (y2 >= (radius2 - (radius2*x2)/radius2)) {
 				out[0] = x;
 				out[1] = y;
 			} else {
 				var rRefraction = 1.0 / refraction;
-	
+
 				var z = Math.sqrt((1.0 - x2/radius2 - y2/radius2) * radius2);
 				var z2 = z*z;
-	
+
 				var xAngle = Math.acos(dx / Math.sqrt(x2+z2));
 				var angle1 = Math.PI/2 - xAngle;
 				var angle2 = Math.asin(Math.sin(angle1)*rRefraction);
 				angle2 = Math.PI/2 - xAngle - angle2;
 				out[0] = x - Math.tan(angle2)*z;
-	
+
 				var yAngle = Math.acos(dy / Math.sqrt(y2+z2));
 				angle1 = Math.PI/2 - yAngle;
 				angle2 = Math.asin(Math.sin(angle1)*rRefraction);
@@ -1112,7 +1112,7 @@ function LensDistortionFilter(){
 			}
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-    };
+	};
 }
 /**
  * Smears out the image with line shapes to create a painting style effect. Mix specifies
@@ -1137,29 +1137,29 @@ function LineSmearFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	var k;
-	  	for(k = 0; k < inputData.length; k++){
-  			outputData[k] = inputData[k];
-  		}
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var distance = (values.distance === undefined) ? this.defaultValues.distance : values.distance;
-	  	if(distance < 1){ distance = 1;}
-	  	distance = parseInt(distance,10);
-	  	var density = (values.density === undefined) ? this.defaultValues.density : values.density;
-	  	var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle;
-	  	var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
-	  	angle = angle/180*Math.PI;
-	  	var sinAngle = Math.sin(angle);
-	  	var cosAngle = Math.cos(angle);
-	  	var numShapes = parseInt(2*density*width*height / 2,10);
-	  	for(var i = 0; i < numShapes; i++){
-	  		var sx = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
-	  		var sy = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
-	  		var length = (Math.random()*Math.pow(2,32) & 0x7fffffff) % distance + 1;
-	  		var rgb2 = [inputData[(sy*width+sx)*4],inputData[(sy*width+sx)*4+1],inputData[(sy*width+sx)*4+2],inputData[(sy*width+sx)*4+3]];
-  			var dx = parseInt(length*cosAngle,10);
+		var inputData = input.data;
+		var outputData = [];
+		var k;
+		for(k = 0; k < inputData.length; k++){
+			outputData[k] = inputData[k];
+		}
+		if(values === undefined){ values = this.defaultValues; }
+		var distance = (values.distance === undefined) ? this.defaultValues.distance : values.distance;
+		if(distance < 1){ distance = 1;}
+		distance = parseInt(distance,10);
+		var density = (values.density === undefined) ? this.defaultValues.density : values.density;
+		var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle;
+		var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
+		angle = angle/180*Math.PI;
+		var sinAngle = Math.sin(angle);
+		var cosAngle = Math.cos(angle);
+		var numShapes = parseInt(2*density*width*height / 2,10);
+		for(var i = 0; i < numShapes; i++){
+			var sx = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
+			var sy = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
+			var length = (Math.random()*Math.pow(2,32) & 0x7fffffff) % distance + 1;
+			var rgb2 = [inputData[(sy*width+sx)*4],inputData[(sy*width+sx)*4+1],inputData[(sy*width+sx)*4+2],inputData[(sy*width+sx)*4+3]];
+			var dx = parseInt(length*cosAngle,10);
 			var dy = parseInt(length*sinAngle,10);
 
 			var x0 = sx-dx;
@@ -1189,9 +1189,9 @@ function LineSmearFilter(){
 			if (x < width && x >= 0 && y < height && y >= 0) {
 				rgb1 = [outputData[(y*width+x)*4],outputData[(y*width+x)*4+1],outputData[(y*width+x)*4+2],outputData[(y*width+x)*4+3]];
 				mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-            	for(k = 0; k < 3; k++){
-            		outputData[(y*width+x)*4+k] = mixedRGB[k];
-            	}
+				for(k = 0; k < 3; k++){
+					outputData[(y*width+x)*4+k] = mixedRGB[k];
+				}
 			}
 			if (Math.abs(dx) > Math.abs(dy)) {
 				d = 2*dy-dx;
@@ -1209,9 +1209,9 @@ function LineSmearFilter(){
 					if (x < width && x >= 0 && y < height && y >= 0) {
 						rgb1 = [outputData[(y*width+x)*4],outputData[(y*width+x)*4+1],outputData[(y*width+x)*4+2],outputData[(y*width+x)*4+3]];
 						mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-		            	for(k = 0; k < 3; k++){
-		            		outputData[(y*width+x)*4+k] = mixedRGB[k];
-		            	}
+						for(k = 0; k < 3; k++){
+							outputData[(y*width+x)*4+k] = mixedRGB[k];
+						}
 					}
 				}
 			} else {
@@ -1230,17 +1230,17 @@ function LineSmearFilter(){
 					if (x < width && x >= 0 && y < height && y >= 0) {
 						rgb1 = [outputData[(y*width+x)*4],outputData[(y*width+x)*4+1],outputData[(y*width+x)*4+2],outputData[(y*width+x)*4+3]];
 						mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-		            	for(k = 0; k < 3; k++){
-		            		outputData[(y*width+x)*4+k] = mixedRGB[k];
-		            	}
+						for(k = 0; k < 3; k++){
+							outputData[(y*width+x)*4+k] = mixedRGB[k];
+						}
 					}
 				}
 			}
-	  	}
-	    for(k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};			
+		}
+		for(k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Replaces every pixel with the maximum RGB value of the neighboring pixels. Each color is 
@@ -1255,38 +1255,38 @@ function MaximumFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	        	var pixel = (y*width + x)*4;
-	            var maxR = 0;
-	            var maxG = 0;
-	            var maxB = 0;
-	            for (var dy = -1; dy <= 1; dy++){
-	            	var iy = y+dy;
-	            	if(iy >= 0 && iy < height){
-		            	for (var dx = -1; dx <= 1; dx++){
+		var inputData = input.data;
+		var outputData = [];
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var maxR = 0;
+				var maxG = 0;
+				var maxB = 0;
+				for (var dy = -1; dy <= 1; dy++){
+					var iy = y+dy;
+					if(iy >= 0 && iy < height){
+						for (var dx = -1; dx <= 1; dx++){
 							var ix = x+dx;
 							if(ix >= 0 && ix < width){
 								var iPixel = (iy*width + ix)*4;
-								maxR = Math.max(maxR,inputData[iPixel]);	 
-								maxG = Math.max(maxG,inputData[iPixel+1]);	 
-								maxB = Math.max(maxB,inputData[iPixel+2]);	 
-							}           	
-		            	}
-	            	}	
-	            }
-	            outputData[pixel] = maxR;
-	            outputData[pixel+1] = maxG;
-	            outputData[pixel+2] = maxB;
-	            outputData[pixel+3] = inputData[pixel+3];
-	        }   
-	    }
-	    for(var k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};			
+								maxR = Math.max(maxR,inputData[iPixel]);
+								maxG = Math.max(maxG,inputData[iPixel+1]);
+								maxB = Math.max(maxB,inputData[iPixel+2]);
+							}
+						}
+					}
+				}
+				outputData[pixel] = maxR;
+				outputData[pixel+1] = maxG;
+				outputData[pixel+2] = maxB;
+				outputData[pixel+3] = inputData[pixel+3];
+			}   
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Replaces every pixel with the median RGB value of the neighboring pixels. Each color is 
@@ -1301,45 +1301,45 @@ function MedianFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	        	var pixel = (y*width + x)*4;
-	            var rList = [];
-	            var gList = [];
-	            var bList = [];
-	            for (var dy = -1; dy <= 1; dy++){
-	            	var iy = y+dy;
-	            	if(iy >= 0 && iy < height){
-		            	for (var dx = -1; dx <= 1; dx++){
+		var inputData = input.data;
+		var outputData = [];
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var rList = [];
+				var gList = [];
+				var bList = [];
+				for (var dy = -1; dy <= 1; dy++){
+					var iy = y+dy;
+					if(iy >= 0 && iy < height){
+						for (var dx = -1; dx <= 1; dx++){
 							var ix = x+dx;
 							if(ix >= 0 && ix < width){
 								var iPixel = (iy*width + ix)*4;
-								rList.push(inputData[iPixel]);	 
-								gList.push(inputData[iPixel+1]);	 
-								bList.push(inputData[iPixel+2]);	 
-								 
-							}           	
-		            	}
-	            	}	
-	            }
-	            var sortFunc = function(a,b){
-	            	return a-b;
-	            };
-	            rList.sort(sortFunc);
-	            gList.sort(sortFunc);
-	            bList.sort(sortFunc);
-	            outputData[pixel] = rList[4];
-	            outputData[pixel+1] = gList[4];
-	            outputData[pixel+2] = bList[4];
-	            outputData[pixel+3] = inputData[pixel+3];
-	        }   
-	    }
-	    for(var k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};			
+								rList.push(inputData[iPixel]);
+								gList.push(inputData[iPixel+1]);
+								bList.push(inputData[iPixel+2]);
+
+							}
+						}
+					}
+				}
+				var sortFunc = function(a,b){
+					return a-b;
+				};
+				rList.sort(sortFunc);
+				gList.sort(sortFunc);
+				bList.sort(sortFunc);
+				outputData[pixel] = rList[4];
+				outputData[pixel+1] = gList[4];
+				outputData[pixel+2] = bList[4];
+				outputData[pixel+3] = inputData[pixel+3];
+			}   
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Replaces every pixel with the minimum RGB value of the neighboring pixels. Each color is 
@@ -1354,38 +1354,38 @@ function MinimumFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	        	var pixel = (y*width + x)*4;
-	            var minR = 255;
-	            var minG = 255;
-	            var minB = 255;
-	            for (var dy = -1; dy <= 1; dy++){
-	            	var iy = y+dy;
-	            	if(iy >= 0 && iy < height){
-		            	for (var dx = -1; dx <= 1; dx++){
+		var inputData = input.data;
+		var outputData = [];
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var minR = 255;
+				var minG = 255;
+				var minB = 255;
+				for (var dy = -1; dy <= 1; dy++){
+					var iy = y+dy;
+					if(iy >= 0 && iy < height){
+						for (var dx = -1; dx <= 1; dx++){
 							var ix = x+dx;
 							if(ix >= 0 && ix < width){
 								var iPixel = (iy*width + ix)*4;
-								minR = Math.min(minR,inputData[iPixel]);	 
-								minG = Math.min(minG,inputData[iPixel+1]);	 
-								minB = Math.min(minB,inputData[iPixel+2]);	 
-							}           	
-		            	}
-	            	}	
-	            }
-	            outputData[pixel] = minR;
-	            outputData[pixel+1] = minG;
-	            outputData[pixel+2] = minB;
-	            outputData[pixel+3] = inputData[pixel+3];
-	        }   
-	    }
-	    for(var k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};		
+								minR = Math.min(minR,inputData[iPixel]);
+								minG = Math.min(minG,inputData[iPixel+1]);
+								minB = Math.min(minB,inputData[iPixel+2]);
+							}
+						}
+					}
+				}
+				outputData[pixel] = minR;
+				outputData[pixel+1] = minG;
+				outputData[pixel+2] = minB;
+				outputData[pixel+3] = inputData[pixel+3];
+			}   
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Creates random noise on the image, with or without color.
@@ -1405,30 +1405,30 @@ function NoiseFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	var density = (values.density === undefined) ? this.defaultValues.density : values.density;
-	  	var monochrome = (values.monochrome === undefined) ? this.defaultValues.monochrome : values.monochrome;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            if(Math.random() <= density){
-	            	var n;
-	            	if(monochrome){
-	            		n = parseInt((2*Math.random()-1) * amount,10);
-	            		inputData[pixel] += n;
-	            		inputData[pixel+1] += n;
-	            		inputData[pixel+2] += n;
-	            	} else {
-	            		for(var i = 0; i < 3; i++){
-	            			n = parseInt((2*Math.random()-1) * amount,10);
-	            			inputData[pixel+i] += n; 
-	            		}
-	            	}
-	            }
-	        }   
-	    }
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		var density = (values.density === undefined) ? this.defaultValues.density : values.density;
+		var monochrome = (values.monochrome === undefined) ? this.defaultValues.monochrome : values.monochrome;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				if(Math.random() <= density){
+					var n;
+					if(monochrome){
+						n = parseInt((2*Math.random()-1) * amount,10);
+						inputData[pixel] += n;
+						inputData[pixel+1] += n;
+						inputData[pixel+2] += n;
+					} else {
+						for(var i = 0; i < 3; i++){
+							n = parseInt((2*Math.random()-1) * amount,10);
+							inputData[pixel+i] += n; 
+						}
+					}
+				}
+			}   
+		}
 	};
 }
 /**
@@ -1446,12 +1446,12 @@ function OilFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var range = (values.range === undefined) ? this.defaultValues.range : values.range;
-	  	range = parseInt(range,10);
-	  	var index = 0;
+		var inputData = input.data;
+		var outputData = [];
+		if(values === undefined){ values = this.defaultValues; }
+		var range = (values.range === undefined) ? this.defaultValues.range : values.range;
+		range = parseInt(range,10);
+		var index = 0;
 		var rHistogram = [];
 		var gHistogram = [];
 		var bHistogram = [];
@@ -1459,13 +1459,13 @@ function OilFilter(){
 		var gTotal = [];
 		var bTotal = [];
 		var levels = 256;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            for (var j = 0; j < levels; j++){
-				    rHistogram[j] = gHistogram[j] = bHistogram[j] = rTotal[j] = gTotal[j] = bTotal[j] = 0;
-	        	}
-	        	for (var row = -range; row <= range; row++) {
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				for (var j = 0; j < levels; j++){
+					rHistogram[j] = gHistogram[j] = bHistogram[j] = rTotal[j] = gTotal[j] = bTotal[j] = 0;
+				}
+				for (var row = -range; row <= range; row++) {
 					var iy = y+row;
 					var ioffset;
 					if (0 <= iy && iy < height) {
@@ -1508,12 +1508,12 @@ function OilFilter(){
 				outputData[pixel+1] = g;
 				outputData[pixel+2] = b;
 				outputData[pixel+3] = inputData[pixel+3];
-	        }   
-	    }
-	    for(var k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};			
+			}   
+		}
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Changes the opacity of the image.
@@ -1529,17 +1529,16 @@ function OpacityFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-		        inputData[pixel+3] = 255*amount;
-	        }   
-	    }
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				inputData[pixel+3] = 255*amount;
+			}   
+		}
 	};
-					
 }
 /**
  * Pinches and whirls the image toward the center point. CenterX and CenterY specify the
@@ -1564,28 +1563,28 @@ function PinchFilter(){
 	};
 
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount; 
-	  	var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle; 
-	  	var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
-	  	var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
-	  	var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
-	  	var radius2 = radius*radius;
-	  	angle = angle/180 * Math.PI;
-	  	var iCenterX = width * centerX; var iCenterY = height * centerY;
-	  	var transInverse = function(x,y,out){
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount; 
+		var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle; 
+		var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
+		var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
+		var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
+		var radius2 = radius*radius;
+		angle = angle/180 * Math.PI;
+		var iCenterX = width * centerX; var iCenterY = height * centerY;
+		var transInverse = function(x,y,out){
 			var dx = x-iCenterX;
-		  	var dy = y-iCenterY;
-		  	var distance = dx*dx + dy*dy;
-		  	if(distance > radius2 || distance === 0){
-		  		out[0] = x;
-		  		out[1] = y;
-		  	} else {
-		  		var d = Math.sqrt( distance / radius2 );
+			var dy = y-iCenterY;
+			var distance = dx*dx + dy*dy;
+			if(distance > radius2 || distance === 0){
+				out[0] = x;
+				out[1] = y;
+			} else {
+				var d = Math.sqrt( distance / radius2 );
 				var t = Math.pow( Math.sin( Math.PI*0.5 * d ), -amount);
 				dx *= t;
 				dy *= t;
@@ -1595,10 +1594,10 @@ function PinchFilter(){
 				var c = Math.cos(a);
 				out[0] = iCenterX + c*dx - s*dy;
 				out[1] = iCenterY + s*dx + c*dy;
-		  	}
+			}
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-    };
+	};
 }
 /**
  * Pixelates the image i.e. divides the image into blocks of color.
@@ -1614,37 +1613,37 @@ function PixelationFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var size = (values.size === undefined) ? this.defaultValues.size : values.size;
-	  	size = parseInt(size,10);
-	  	var pixels = [];
-	  	var by, bx, bPixel;
-	  	for (var y = 0; y < height; y+=size) {
-	        for (var x = 0; x < width; x+=size) {
-	            var pixel = (y*width + x)*4;
-	            var w = Math.min(size, width-x);
-	            var h = Math.min(size, height-y);
-	            var t = w*h;
-	            var r = 0, g = 0, b = 0;
-	            for(by = y; by < y+h; by++){
-	            	for(bx = x; bx < x+w; bx++){
-	            		bPixel = (by*width + bx)*4;
-	            		r += inputData[bPixel];
-	            		g +=  inputData[bPixel+1];
-	            		b += inputData[bPixel+2];
-	            	}
-	            }
-	            for(by = y; by < y+h; by++){
-	            	for(bx = x; bx < x+w; bx++){
-	            		bPixel = (by*width + bx)*4;
-	            		inputData[bPixel] = r/t;
-	            		inputData[bPixel+1] = g/t;
-	            		inputData[bPixel+2] = b/t;
-	            	}
-	            }
-	        }   
-	    }
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var size = (values.size === undefined) ? this.defaultValues.size : values.size;
+		size = parseInt(size,10);
+		var pixels = [];
+		var by, bx, bPixel;
+		for (var y = 0; y < height; y+=size) {
+			for (var x = 0; x < width; x+=size) {
+				var pixel = (y*width + x)*4;
+				var w = Math.min(size, width-x);
+				var h = Math.min(size, height-y);
+				var t = w*h;
+				var r = 0, g = 0, b = 0;
+				for(by = y; by < y+h; by++){
+					for(bx = x; bx < x+w; bx++){
+						bPixel = (by*width + bx)*4;
+						r += inputData[bPixel];
+						g +=  inputData[bPixel+1];
+						b += inputData[bPixel+2];
+					}
+				}
+				for(by = y; by < y+h; by++){
+					for(bx = x; bx < x+w; bx++){
+						bPixel = (by*width + bx)*4;
+						inputData[bPixel] = r/t;
+						inputData[bPixel+1] = g/t;
+						inputData[bPixel+2] = b/t;
+					}
+				}
+			}   
+		}
 	};
 }
 /**
@@ -1663,18 +1662,18 @@ function PosterizeFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var levels = (values.levels === undefined) ? this.defaultValues.levels : parseInt(values.levels,10);
-	  	if(levels <= 1){
-  			return;
-  		}
-  		var table = [];
-  		for(var i = 0; i < 256; i++){
-  			table[i] = parseInt(255 * parseInt(i*levels/256,10) / (levels-1),10);
-  		}
-	    filterUtils.tableFilter(inputData,table,width,height);
-	};			
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var levels = (values.levels === undefined) ? this.defaultValues.levels : parseInt(values.levels,10);
+		if(levels <= 1){
+			return;
+		}
+		var table = [];
+		for(var i = 0; i < 256; i++){
+			table[i] = parseInt(255 * parseInt(i*levels/256,10) / (levels-1),10);
+		}
+		filterUtils.tableFilter(inputData,table,width,height);
+	};
 }
 /**
  * Adjust the factor of each RGB color value in the image.
@@ -1694,22 +1693,22 @@ function RGBAdjustFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var red = (values.red === undefined) ? this.defaultValues.red : values.red;
-	  	var green = (values.green === undefined) ? this.defaultValues.green : values.green;
-	  	var blue = (values.blue === undefined) ? this.defaultValues.blue : values.blue;
-	  	if(red < 0){ red = 0; }
-	  	if(green < 0){ green = 0; }
-	  	if(blue < 0){ blue = 0; }
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            inputData[pixel] *= red;
-	            inputData[pixel+1] *= green;
-	            inputData[pixel+2] *= blue;
-	        }   
-	    }
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var red = (values.red === undefined) ? this.defaultValues.red : values.red;
+		var green = (values.green === undefined) ? this.defaultValues.green : values.green;
+		var blue = (values.blue === undefined) ? this.defaultValues.blue : values.blue;
+		if(red < 0){ red = 0; }
+		if(green < 0){ green = 0; }
+		if(blue < 0){ blue = 0; }
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				inputData[pixel] *= red;
+				inputData[pixel+1] *= green;
+				inputData[pixel+2] *= blue;
+			}   
+		}
 	};
 }
 /**
@@ -1727,32 +1726,32 @@ function SaturationFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
 		var RW = 0.3;
 		var RG = 0.59;
 		var RB = 0.11;
-	  	var a = (1 - amount) * RW + amount;
+		var a = (1 - amount) * RW + amount;
 		var b = (1 - amount) * RW;
-	  	var c = (1 - amount) * RW;
-	  	var d = (1 - amount) * RG;
-	  	var e = (1 - amount) * RG + amount;
-	  	var f = (1 - amount) * RG;
-	  	var g = (1 - amount) * RB;
-	  	var h = (1 - amount) * RB;
-	  	var i = (1 - amount) * RB + amount;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var pR = inputData[pixel];
-	            var pG = inputData[pixel+1];
-	            var pB = inputData[pixel+2];
-		        inputData[pixel]   = a*pR + d*pG + g*pB;
+		var c = (1 - amount) * RW;
+		var d = (1 - amount) * RG;
+		var e = (1 - amount) * RG + amount;
+		var f = (1 - amount) * RG;
+		var g = (1 - amount) * RB;
+		var h = (1 - amount) * RB;
+		var i = (1 - amount) * RB + amount;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var pR = inputData[pixel];
+				var pG = inputData[pixel+1];
+				var pB = inputData[pixel+2];
+				inputData[pixel]   = a*pR + d*pG + g*pB;
 				inputData[pixel+1] = b*pR + e*pG + h*pB;
 				inputData[pixel+2]  = c*pR + f*pG + i*pB;
-	        }   
-	    }
+			}   
+		}
 	};
 }
 /**
@@ -1775,25 +1774,25 @@ function SawtoothRippleFilter(){
 	};
 
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var xAmplitude = (values.xAmplitude === undefined) ? this.defaultValues.xAmplitude : values.xAmplitude; 
-	  	var yAmplitude = (values.yAmplitude === undefined) ? this.defaultValues.yAmplitude : values.yAmplitude; 
-	  	var xWavelength = (values.xWavelength === undefined) ? this.defaultValues.xWavelength : values.xWavelength; 
-	  	var yWavelength = (values.yWavelength === undefined) ? this.defaultValues.yWavelength : values.yWavelength; 
-	  	var transInverse = function(x,y,out){
-	  		var nx = y/xWavelength;
-	  		var ny = x/yWavelength;
-	  		var fx = filterUtils.mod(nx,1);
-	  		var fy = filterUtils.mod(ny,1);
-	  		out[0] = x + xAmplitude * fx;
-	  		out[1] = y + yAmplitude * fy;
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var xAmplitude = (values.xAmplitude === undefined) ? this.defaultValues.xAmplitude : values.xAmplitude; 
+		var yAmplitude = (values.yAmplitude === undefined) ? this.defaultValues.yAmplitude : values.yAmplitude; 
+		var xWavelength = (values.xWavelength === undefined) ? this.defaultValues.xWavelength : values.xWavelength; 
+		var yWavelength = (values.yWavelength === undefined) ? this.defaultValues.yWavelength : values.yWavelength; 
+		var transInverse = function(x,y,out){
+			var nx = y/xWavelength;
+			var ny = x/yWavelength;
+			var fx = filterUtils.mod(nx,1);
+			var fy = filterUtils.mod(ny,1);
+			out[0] = x + xAmplitude * fx;
+			out[1] = y + yAmplitude * fy;
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-   };
+	};
 }
 /**
  * Creates a sepia effect on the image i.e. gives the image a yellow-brownish tone.
@@ -1811,26 +1810,26 @@ function SepiaFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	amount *= 255/100;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var luma = inputData[pixel]*0.3 + inputData[pixel+1]*0.59 + inputData[pixel+2]*0.11;
-	            var r,g,b;
-	            r = g = b = luma;
-	           	r += 40;
-	           	g += 20;
-				b -= amount;	
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		amount *= 255/100;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var luma = inputData[pixel]*0.3 + inputData[pixel+1]*0.59 + inputData[pixel+2]*0.11;
+				var r,g,b;
+				r = g = b = luma;
+				r += 40;
+				g += 20;
+				b -= amount;
 				
-				inputData[pixel] = r;           	
-				inputData[pixel+1] = g;           	
-				inputData[pixel+2] = b;           	
-	        }   
-	    }
-	};			
+				inputData[pixel] = r;
+				inputData[pixel+1] = g;
+				inputData[pixel+2] = b;
+			}   
+		}
+	};
 }
 /**
  * Sharpens the image slightly. For increased effect, apply the filter multiple times.
@@ -1846,12 +1845,12 @@ function SharpenFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var matrix = [ 0,-0.2, 0,
-	  				  -0.2,1.8,-0.2,
-	  				   0, -0.2, 0];
-	  	filterUtils.convolveFilter(inputData,matrix,width,height);
-	};			
+		var inputData = input.data;
+		var matrix = [ 0.0,-0.2, 0.0,
+					  -0.2, 1.8,-0.2,
+					   0.0, -0.2, 0.0];
+		filterUtils.convolveFilter(inputData,matrix,width,height);
+	};
 }
 /**
  * Creates ripples on the image horizontally/vertically in a sine pattern.
@@ -1873,25 +1872,25 @@ function SineRippleFilter(){
 	};
 
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var xAmplitude = (values.xAmplitude === undefined) ? this.defaultValues.xAmplitude : values.xAmplitude; 
-	  	var yAmplitude = (values.yAmplitude === undefined) ? this.defaultValues.yAmplitude : values.yAmplitude; 
-	  	var xWavelength = (values.xWavelength === undefined) ? this.defaultValues.xWavelength : values.xWavelength; 
-	  	var yWavelength = (values.yWavelength === undefined) ? this.defaultValues.yWavelength : values.yWavelength; 
-	  	var transInverse = function(x,y,out){
-	  		var nx = y/xWavelength;
-	  		var ny = x/yWavelength;
-	  		var fx = Math.sin(nx);
-	  		var fy = Math.sin(ny);
-	  		out[0] = x + xAmplitude * fx;
-	  		out[1] = y + yAmplitude * fy;
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var xAmplitude = (values.xAmplitude === undefined) ? this.defaultValues.xAmplitude : values.xAmplitude; 
+		var yAmplitude = (values.yAmplitude === undefined) ? this.defaultValues.yAmplitude : values.yAmplitude; 
+		var xWavelength = (values.xWavelength === undefined) ? this.defaultValues.xWavelength : values.xWavelength; 
+		var yWavelength = (values.yWavelength === undefined) ? this.defaultValues.yWavelength : values.yWavelength; 
+		var transInverse = function(x,y,out){
+			var nx = y/xWavelength;
+			var ny = x/yWavelength;
+			var fx = Math.sin(nx);
+			var fy = Math.sin(ny);
+			out[0] = x + xAmplitude * fx;
+			out[1] = y + yAmplitude * fy;
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-   };
+	};
 }
 /**
  * Produces a solarization effect on the image.  
@@ -1907,14 +1906,14 @@ function SolarizeFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-  		var table = [];
-  		for(var i = 0; i < 256; i++){
-  			var val = (i/255 > 0.5) ? 2*(i/255-0.5) : 2*(0.5-i/255);
-  			table[i] = parseInt(255 * val,10);
-  		}
-	  	filterUtils.tableFilter(inputData, table, width, height);
-	};			
+		var inputData = input.data;
+		var table = [];
+		for(var i = 0; i < 256; i++){
+			var val = (i/255 > 0.5) ? 2*(i/255-0.5) : 2*(0.5-i/255);
+			table[i] = parseInt(255 * val,10);
+		}
+		filterUtils.tableFilter(inputData, table, width, height);
+	};
 }
 /**
  * Generates a sparkle/sunburst effect on the image. CenterX and CenterY specify the
@@ -1943,47 +1942,47 @@ function SparkleFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var rays = (values.rays === undefined) ? this.defaultValues.rays : values.rays;
-	  	rays = parseInt(rays, 10);
-	  	var size = (values.size === undefined) ? this.defaultValues.size : values.size;
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	var randomness = (values.randomness === undefined) ? this.defaultValues.randomness : values.randomness;
-	  	var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX;
-	  	var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY;
-	  	var iCenterX = centerX * width;
-	  	var iCenterY = centerY * height;
-	  	var rayLengths = [];
-	  	for(var j = 0; j < rays; j++){
-	  		rayLengths[j]= size + randomness / 100 * size * filterUtils.gaussianRandom();
-	  	}
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var dx = x-iCenterX;
-	            var dy = y-iCenterY;
-	            var distance = dx*dx + dy*dy;
-	            var angle = Math.atan2(dy,dx);
-	            var d = (angle+Math.PI) / (Math.PI*2) * rays;
-	            var i = parseInt(d,10);
-	            var f = d - i;
-	            if(size !== 0){
-	            	var length = filterUtils.linearInterpolate(f, rayLengths[i % rays], rayLengths[(i+1) % rays]);
-	            	var g = length*length / (distance+0.0001);
-	            	g = Math.pow(g, (100-amount) / 50);
-	            	f -= 0.5;
-	            	f = 1 - f*f;
-	            	f *= g;
-	            }
-	            f = filterUtils.clampPixel(f,0,1);
-	            var mixedRGB = filterUtils.mixColors(f,[inputData[pixel],inputData[pixel+1],inputData[pixel+2],inputData[pixel+3]],[255,255,255,255]);
-	            for(var k = 0; k < 3; k++){
-	            	inputData[pixel+k] = mixedRGB[k]; 
-	            }
-	        }   
-	    }
-	};			
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var rays = (values.rays === undefined) ? this.defaultValues.rays : values.rays;
+		rays = parseInt(rays, 10);
+		var size = (values.size === undefined) ? this.defaultValues.size : values.size;
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		var randomness = (values.randomness === undefined) ? this.defaultValues.randomness : values.randomness;
+		var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX;
+		var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY;
+		var iCenterX = centerX * width;
+		var iCenterY = centerY * height;
+		var rayLengths = [];
+		for(var j = 0; j < rays; j++){
+			rayLengths[j]= size + randomness / 100 * size * filterUtils.gaussianRandom();
+		}
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var dx = x-iCenterX;
+				var dy = y-iCenterY;
+				var distance = dx*dx + dy*dy;
+				var angle = Math.atan2(dy,dx);
+				var d = (angle+Math.PI) / (Math.PI*2) * rays;
+				var i = parseInt(d,10);
+				var f = d - i;
+				if(size !== 0){
+					var length = filterUtils.linearInterpolate(f, rayLengths[i % rays], rayLengths[(i+1) % rays]);
+					var g = length*length / (distance+0.0001);
+					g = Math.pow(g, (100-amount) / 50);
+					f -= 0.5;
+					f = 1 - f*f;
+					f *= g;
+				}
+				f = filterUtils.clampPixel(f,0,1);
+				var mixedRGB = filterUtils.mixColors(f,[inputData[pixel],inputData[pixel+1],inputData[pixel+2],inputData[pixel+3]],[255,255,255,255]);
+				for(var k = 0; k < 3; k++){
+					inputData[pixel+k] = mixedRGB[k]; 
+				}
+			}   
+		}
+	};
 }
 /**
  * Smears out the image with square shapes to create a painting style effect.
@@ -2007,42 +2006,42 @@ function SquareSmearFilter(){
 	var filterUtils = new FilterUtils();
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	var k;
-	  	for(k = 0; k < inputData.length; k++){
-  			outputData[k] = inputData[k];
-  		}
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var size = (values.size === undefined) ? this.defaultValues.size : values.size;
-	  	if(size < 1){ size = 1;}
-	  	size = parseInt(size,10);
-	  	var density = (values.density === undefined) ? this.defaultValues.density : values.density;
-	  	var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
-	  	var radius = size+1;
-	  	var radius2 = radius*radius;
-	  	var numShapes = parseInt(2*density/30*width*height / 2,10);
-	  	for(var i = 0; i < numShapes; i++){
-	  		var sx = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
-	  		var sy = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
-	  		var rgb2 = [inputData[(sy*width+sx)*4],inputData[(sy*width+sx)*4+1],inputData[(sy*width+sx)*4+2],inputData[(sy*width+sx)*4+3]];
+		var inputData = input.data;
+		var outputData = [];
+		var k;
+		for(k = 0; k < inputData.length; k++){
+			outputData[k] = inputData[k];
+		}
+		if(values === undefined){ values = this.defaultValues; }
+		var size = (values.size === undefined) ? this.defaultValues.size : values.size;
+		if(size < 1){ size = 1;}
+		size = parseInt(size,10);
+		var density = (values.density === undefined) ? this.defaultValues.density : values.density;
+		var mix = (values.mix === undefined) ? this.defaultValues.mix : values.mix;
+		var radius = size+1;
+		var radius2 = radius*radius;
+		var numShapes = parseInt(2*density/30*width*height / 2,10);
+		for(var i = 0; i < numShapes; i++){
+			var sx = (Math.random()*Math.pow(2,32) & 0x7fffffff) % width;
+			var sy = (Math.random()*Math.pow(2,32) & 0x7fffffff) % height;
+			var rgb2 = [inputData[(sy*width+sx)*4],inputData[(sy*width+sx)*4+1],inputData[(sy*width+sx)*4+2],inputData[(sy*width+sx)*4+3]];
 			for(var x = sx - radius; x < sx + radius + 1; x++){
 				
 				for(var y = sy - radius; y < sy + radius + 1; y++){
 					if (x >= 0 && x < width && y >= 0 && y < height) {
 						var rgb1 = [outputData[(y*width+x)*4],outputData[(y*width+x)*4+1],outputData[(y*width+x)*4+2],outputData[(y*width+x)*4+3]];
 						var mixedRGB = filterUtils.mixColors(mix,rgb1,rgb2);
-		            	for(k = 0; k < 3; k++){
-		            		outputData[(y*width+x)*4+k] = mixedRGB[k];
-		            	}
-		            }
+						for(k = 0; k < 3; k++){
+							outputData[(y*width+x)*4+k] = mixedRGB[k];
+						}
+					}
 				}
 			}
-	  	}
-	    for(k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};			
+		}
+		for(k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Divides the colors into black and white following the treshold value. Brightnesses above the threshold
@@ -2059,20 +2058,20 @@ function ThresholdFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var threshold = (values.threshold === undefined) ? this.defaultValues.threshold : values.threshold;
-	  	for (var y = 0; y < height; y++) {
-	        for (var x = 0; x < width; x++) {
-	            var pixel = (y*width + x)*4;
-	            var brightness = (inputData[pixel] + inputData[pixel+1] + inputData[pixel+2])/3;
-	            var colorVal = 0;
-	            if(brightness > threshold){
-	            	colorVal = 255;
-	            }
-	            inputData[pixel] = inputData[pixel+1] = inputData[pixel+2] = colorVal;
-	        }   
-	    }
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var threshold = (values.threshold === undefined) ? this.defaultValues.threshold : values.threshold;
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				var pixel = (y*width + x)*4;
+				var brightness = (inputData[pixel] + inputData[pixel+1] + inputData[pixel+2])/3;
+				var colorVal = 0;
+				if(brightness > threshold){
+					colorVal = 255;
+				}
+				inputData[pixel] = inputData[pixel+1] = inputData[pixel+2] = colorVal;
+			}   
+		}
 	};
 }
 /**
@@ -2095,25 +2094,25 @@ function TriangleRippleFilter(){
 	};
 
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var xAmplitude = (values.xAmplitude === undefined) ? this.defaultValues.xAmplitude : values.xAmplitude; 
-	  	var yAmplitude = (values.yAmplitude === undefined) ? this.defaultValues.yAmplitude : values.yAmplitude; 
-	  	var xWavelength = (values.xWavelength === undefined) ? this.defaultValues.xWavelength : values.xWavelength; 
-	  	var yWavelength = (values.yWavelength === undefined) ? this.defaultValues.yWavelength : values.yWavelength; 
-	  	var transInverse = function(x,y,out){
-	  		var nx = y/xWavelength;
-	  		var ny = x/yWavelength;
-	  		var fx = filterUtils.triangle(nx,1);
-	  		var fy = filterUtils.triangle(ny,1);
-	  		out[0] = x + xAmplitude * fx;
-	  		out[1] = y + yAmplitude * fy;
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var xAmplitude = (values.xAmplitude === undefined) ? this.defaultValues.xAmplitude : values.xAmplitude; 
+		var yAmplitude = (values.yAmplitude === undefined) ? this.defaultValues.yAmplitude : values.yAmplitude; 
+		var xWavelength = (values.xWavelength === undefined) ? this.defaultValues.xWavelength : values.xWavelength; 
+		var yWavelength = (values.yWavelength === undefined) ? this.defaultValues.yWavelength : values.yWavelength; 
+		var transInverse = function(x,y,out){
+			var nx = y/xWavelength;
+			var ny = x/yWavelength;
+			var fx = filterUtils.triangle(nx,1);
+			var fy = filterUtils.triangle(ny,1);
+			out[0] = x + xAmplitude * fx;
+			out[1] = y + yAmplitude * fy;
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-   };
+	};
 }
 /**
  * Twists the image around a given center point. CenterX and CenterY specify the
@@ -2136,34 +2135,34 @@ function TwirlFilter(){
 	};
 
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle; 
-	  	var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
-	  	var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
-	  	var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
-	  	var radius2 = radius*radius;
-	  	angle = angle/180 * Math.PI;
-	  	var iCenterX = width * centerX; var iCenterY = height * centerY;
-	  	var transInverse = function(x,y,out){
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var angle = (values.angle === undefined) ? this.defaultValues.angle : values.angle; 
+		var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
+		var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
+		var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
+		var radius2 = radius*radius;
+		angle = angle/180 * Math.PI;
+		var iCenterX = width * centerX; var iCenterY = height * centerY;
+		var transInverse = function(x,y,out){
 			var dx = x-iCenterX;
-		  	var dy = y-iCenterY;
-		  	var distance = dx*dx + dy*dy;
-		  	if(distance > radius2){
-		  		out[0] = x;
-		  		out[1] = y;
-		  	} else {
-		  		distance = Math.sqrt(distance);
-		  		var a = Math.atan2(dy, dx) + angle * (radius-distance) / radius;
-		  		out[0] = iCenterX + distance*Math.cos(a);
-		  		out[1] = iCenterY + distance*Math.sin(a);
-		  	}
+			var dy = y-iCenterY;
+			var distance = dx*dx + dy*dy;
+			if(distance > radius2){
+				out[0] = x;
+				out[1] = y;
+			} else {
+				distance = Math.sqrt(distance);
+				var a = Math.atan2(dy, dx) + angle * (radius-distance) / radius;
+				out[0] = iCenterX + distance*Math.cos(a);
+				out[1] = iCenterY + distance*Math.sin(a);
+			}
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-    };
+	};
 }
 /**
  * Creates a classical vignette effect on the image i.e. darkens the corners.
@@ -2179,30 +2178,30 @@ function VignetteFilter(){
 	};
 	this.filter = function(input,values){
 		var width = input.width, height = input.height;
-	  	var inputData = input.data;
-	  	var outputData = [];
-	  	if(values === undefined){ values = this.defaultValues; }
-	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	var canvas = document.createElement("canvas");
-	  	canvas.width = width;
-	  	canvas.height = height;
-	  	var context = canvas.getContext("2d");
-	  	var gradient;
-	  	var radius = Math.sqrt( Math.pow(width/2, 2) + Math.pow(height/2, 2) );
-	  	context.putImageData(input,0,0);
-  		context.globalCompositeOperation = 'source-over';
-  		
-        gradient = context.createRadialGradient(width/2, height/2, 0, width/2, height/2, radius);
-        gradient.addColorStop(0, 'rgba(0,0,0,0)');
-        gradient.addColorStop(0.5, 'rgba(0,0,0,0)');
-        gradient.addColorStop(1, 'rgba(0,0,0,' + amount + ')');
-        context.fillStyle = gradient;
-        context.fillRect(0, 0, width, height);
-        outputData = context.getImageData(0,0,width,height).data;
-	    for(var k = 0; k < outputData.length; k++){
-  			inputData[k] = outputData[k];
-  		}
-	};			
+		var inputData = input.data;
+		var outputData = [];
+		if(values === undefined){ values = this.defaultValues; }
+		var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
+		var canvas = document.createElement("canvas");
+		canvas.width = width;
+		canvas.height = height;
+		var context = canvas.getContext("2d");
+		var gradient;
+		var radius = Math.sqrt( Math.pow(width/2, 2) + Math.pow(height/2, 2) );
+		context.putImageData(input,0,0);
+		context.globalCompositeOperation = 'source-over';
+		
+		gradient = context.createRadialGradient(width/2, height/2, 0, width/2, height/2, radius);
+		gradient.addColorStop(0, 'rgba(0,0,0,0)');
+		gradient.addColorStop(0.5, 'rgba(0,0,0,0)');
+		gradient.addColorStop(1, 'rgba(0,0,0,' + amount + ')');
+		context.fillStyle = gradient;
+		context.fillRect(0, 0, width, height);
+		outputData = context.getImageData(0,0,width,height).data;
+		for(var k = 0; k < outputData.length; k++){
+			inputData[k] = outputData[k];
+		}
+	};
 }
 /**
  * Produces a water ripple/waves on the image. CenterX and CenterY specify the
@@ -2228,39 +2227,39 @@ function WaterRippleFilter(){
 		centerY : {min: 0.0, max:1.0}
 	};
 	var filterUtils = new FilterUtils();
-	
+
 	this.filter = function (input, values){
-	  	var width = input.width, height = input.height;
-	 	var inputData = input.data;
-	 	if(values === undefined){ values = this.defaultValues; }
-	  	var wavelength = (values.wavelength === undefined) ? this.defaultValues.wavelength : values.wavelength; 
-	  	var amplitude = (values.amplitude === undefined) ? this.defaultValues.amplitude : values.amplitude; 
-	  	var phase = (values.phase === undefined) ? this.defaultValues.phase : values.phase; 
-	  	var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
-	  	var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
-	  	var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
-	  	var radius2 = radius*radius;
-	  	var iCenterX = width * centerX; var iCenterY = height * centerY;
-	  	var transInverse = function(x,y,out){
+		var width = input.width, height = input.height;
+		var inputData = input.data;
+		if(values === undefined){ values = this.defaultValues; }
+		var wavelength = (values.wavelength === undefined) ? this.defaultValues.wavelength : values.wavelength; 
+		var amplitude = (values.amplitude === undefined) ? this.defaultValues.amplitude : values.amplitude; 
+		var phase = (values.phase === undefined) ? this.defaultValues.phase : values.phase; 
+		var centerX = (values.centerX === undefined) ? this.defaultValues.centerX : values.centerX; 
+		var centerY = (values.centerY === undefined) ? this.defaultValues.centerY : values.centerY; 
+		var radius = (values.radius === undefined) ? this.defaultValues.radius : values.radius;  
+		var radius2 = radius*radius;
+		var iCenterX = width * centerX; var iCenterY = height * centerY;
+		var transInverse = function(x,y,out){
 			var dx = x-iCenterX;
-		  	var dy = y-iCenterY;
-		  	var distance2 = dx*dx + dy*dy;
-		  	if(distance2 > radius2){
-		  		out[0] = x;
-		  		out[1] = y;
-		  	} else {
-		  		var distance = Math.sqrt(distance2);
-		  		var amount = amplitude * Math.sin(distance/wavelength * Math.PI * 2 - phase);
-		  		amount *= (radius-distance)/radius;
-		  		if(distance !== 0){
-		  			amount *= wavelength/distance;
-		  		}
-		  		out[0] = x + dx*amount;
-		  		out[1] = y + dy*amount;
-		  	}
+			var dy = y-iCenterY;
+			var distance2 = dx*dx + dy*dy;
+			if(distance2 > radius2){
+				out[0] = x;
+				out[1] = y;
+			} else {
+				var distance = Math.sqrt(distance2);
+				var amount = amplitude * Math.sin(distance/wavelength * Math.PI * 2 - phase);
+				amount *= (radius-distance)/radius;
+				if(distance !== 0){
+					amount *= wavelength/distance;
+				}
+				out[0] = x + dx*amount;
+				out[1] = y + dy*amount;
+			}
 		};
 		filterUtils.transformFilter(inputData,transInverse,width,height);
-    };
+	};
 }
 /**
  * A collection of all the filters.
