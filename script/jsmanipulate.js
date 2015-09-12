@@ -2308,3 +2308,9 @@ var JSManipulate = {
 	vignette : new VignetteFilter(),
 	waterripple : new WaterRippleFilter() 
 };
+
+// node.js
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
+	module.exports = JSManipulate;
+}
+

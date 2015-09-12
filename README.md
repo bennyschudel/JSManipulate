@@ -13,6 +13,10 @@ MIT LICENSED (http://www.opensource.org/licenses/mit-license.php)
 
 Copyright (c) 2011, Joel Besada
 
+Installation
+------
+	npm install jsmanipulate
+
 Usage
 ------
 
