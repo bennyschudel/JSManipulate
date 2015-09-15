@@ -9,7 +9,7 @@
 		"homepage": "http://joelb.me/jsmanipulate/",
 		"repository": {
 			"type": "git",
-			"url": "https://github.com/dholtzmann/JSManipulate.git",
+			"url": "https://github.com/dholtzmann/JSManipulate.git"
 		},
     "dependencies": {
         "canvas": "1.2.7"
