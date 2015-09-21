@@ -1,0 +1,18 @@
+{
+		"author": "Joel Besada",
+    "name": "jsmanipulate",
+    "version": "1.0.2",
+    "description": "JSManipulate is an image filter and effects library written in Javascript for client-side manipulation of images on a web page.",
+    "main": "jsmanipulate.js",
+		"license": "MIT",
+    "keywords": ["canvas", "image", "images", "graphics", "filter", "filters", "manipulation", "manipulate", "distortion", "distort", "effects", "blur", "sharpen", "emboss", "invert"],
+		"homepage": "http://joelb.me/jsmanipulate/",
+		"repository": {
+			"type": "git",
+			"url": "https://github.com/dholtzmann/JSManipulate.git"
+		},
+    "dependencies": {
+        "canvas": "~1.2.9"
+    },
+    "engines": { "node": "*" }
+}
