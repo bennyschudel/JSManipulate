@@ -15,7 +15,8 @@ function VignetteFilter(){
 	  	var outputData = [];
 	  	if(values === undefined){ values = this.defaultValues; }
 	  	var amount = (values.amount === undefined) ? this.defaultValues.amount : values.amount;
-	  	var canvas = document.createElement("canvas");
+			if(typeof module !== "undefined" && typeof module.exports !== "undefined"){ var canvas = require("canvas"); } // nodejs
+			else{	var canvas = document.createElement("canvas"); } // browser
 	  	canvas.width = width;
 	  	canvas.height = height;
 	  	var context = canvas.getContext("2d");
