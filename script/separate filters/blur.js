@@ -15,6 +15,7 @@ function BlurFilter(){
 		var height = input.height;
 		var inputData = input.data;
 		var q;
+		if(values === undefined){ values = this.defaultValues; }
 		var amount = values.amount;
 		if (amount < 0.0) {
 			amount = 0.0;
